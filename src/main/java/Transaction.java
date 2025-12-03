@@ -71,4 +71,24 @@ public class Transaction {
 		}
 		return true;
 	}
+	
+	// return sum of UTXO ip values
+	public float getInputsValue() {
+		float total = 0;
+		for(TransactionInput i : inputs) {
+			if(i.UTXO == null) continue;
+			total += i.UTXO.value;
+		}
+		return total;
+	}
+	
+	// return sum of outputs
+	public float getOutputsValue() {
+		float total = 0;
+		for(TransactionInput i : inputs) {
+			if(i.UTXO == null) continue;
+			total += i.UTXO.value;
+		}
+		return total;
+	}
 }
