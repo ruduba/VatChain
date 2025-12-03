@@ -2,9 +2,11 @@ import java.util.ArrayList;
 import com.google.gson.GsonBuilder;
 import java.security.*;
 import java.util.Base64;
+import java.util.HashMap;
 
 public class VatChain {
 	public static ArrayList<Block> blockchain = new ArrayList<Block>();
+	public static HashMap<String, TransactionOutput> UTXOs = new HashMap<String, TransactionOutput>();
 	public static int difficulty = 5;
 	public static Wallet walletA;
 	public static Wallet walletB;
