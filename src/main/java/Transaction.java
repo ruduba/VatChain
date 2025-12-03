@@ -40,4 +40,35 @@ public class Transaction {
 		String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(reciepient);
 		return StringUtil.verifyECDSASig(sender, data, signature);
 	}
+	
+	public boolean processTransaction() {
+		if (verifySignature()== false) {
+			System.out.println("#Transaction Signature failed to verify");
+			return false;
+		}
+		// gather *unspent* transaction inputs
+		for(TransactionInput i : inputs) {
+			i.UTXO = VatChain.UTXOs.get(i.txOutputId);
+		}
+		
+		if(getInputsValue() < VatChain.minimumTransaction) {
+			System.out.println("#Transaction Inputs to small: "+ getInputsValue());
+			return false;
+		}
+		
+		float leftOver = getInputsValue() - value;
+		transactionId = calculateHash();
+		outputs.add(new TransactionOutput(this.reciepient, value, transactionId));
+		outputs.add(new TransactionOutput(this.sender, leftOver, transactionId));
+		
+		for(TransactionOutput o: outputs) {
+			VatChain.UTXOs.put(o.id, o);
+		}
+		
+		for(TransactionInput i: inputs) {
+			if(i.UTXO == null) continue;
+			VatChain.UTXOs.remove(i.UTXO.id);
+		}
+		return true;
+	}
 }
