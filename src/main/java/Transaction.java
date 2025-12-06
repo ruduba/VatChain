@@ -51,20 +51,25 @@ public class Transaction {
 			i.UTXO = VatChain.UTXOs.get(i.txOutputId);
 		}
 		
+		//check if transaction is valid
 		if(getInputsValue() < VatChain.minimumTransaction) {
 			System.out.println("#Transaction Inputs to small: "+ getInputsValue());
 			return false;
 		}
 		
+		// gen transaction op
 		float leftOver = getInputsValue() - value;
 		transactionId = calculateHash();
-		outputs.add(new TransactionOutput(this.reciepient, value, transactionId));
-		outputs.add(new TransactionOutput(this.sender, leftOver, transactionId));
+		outputs.add(new TransactionOutput(this.reciepient, value, transactionId));// send value to recipient
+		outputs.add(new TransactionOutput(this.sender, leftOver, transactionId));// send change back to sender
 		
+		
+		//add change op to unspent list
 		for(TransactionOutput o: outputs) {
 			VatChain.UTXOs.put(o.id, o);
 		}
 		
+		// remove transaction ip as spent
 		for(TransactionInput i: inputs) {
 			if(i.UTXO == null) continue;
 			VatChain.UTXOs.remove(i.UTXO.id);
