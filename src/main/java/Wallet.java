@@ -1,6 +1,7 @@
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 import java.util.HashMap;
+//import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ public class Wallet {
 	public PublicKey publicKey;
 	
 	public HashMap<String, TransactionOutput> UTXOs = new HashMap<String, TransactionOutput>();
-	
+	//public List<Transaction> txRec = List<Transaction>();
 	public Wallet() {
 		generateKeyPair();
 	}
@@ -30,6 +31,7 @@ public class Wallet {
 		}
 	}
 	
+	// returns balance of UTXO owned by wallet
 	public float getBalance() {
 		float total = 0;
 		for(Map.Entry<String, TransactionOutput> item: VatChain.UTXOs.entrySet()) {
@@ -43,12 +45,14 @@ public class Wallet {
 		return total;
 	}
 	
+	// generates and returns a new transaction from this wallet
 	public Transaction sendFunds(PublicKey _reciepient, float value) {
 		if(getBalance()<value) {
 			System.out.println("#Not enough funds to send transaction. Transaction Discarded");
 			return null;
 		}
 		
+		// tx ip list
 		ArrayList<TransactionInput> inputs = new ArrayList<TransactionInput>();
 		
 		float total =0;
@@ -56,7 +60,10 @@ public class Wallet {
 			TransactionOutput UTXO = item.getValue();
 			total += UTXO.value;
 			inputs.add(new TransactionInput(UTXO.id));
-			if(total > value) break;
+			if(total > value) {
+			//System.out.println("Not enough balance");
+			break;
+			}
 		}
 		
 		Transaction newTransaction = new Transaction(publicKey, _reciepient, value, inputs);
@@ -67,5 +74,6 @@ public class Wallet {
 		}
 		return newTransaction;
 	}
+	
 	
 }
